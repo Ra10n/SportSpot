@@ -23,65 +23,63 @@ async function main() {
     slug: "bouldern",
   },
 ]
-const states = [
-  {
-    name: "Saarland",
-    slug: "saarland",
-    districts: [
-      {
-        name: "Saarbrücken",
-        slug: "saarbruecken",
-      },
-      {
-        name: "Saarlouis",
-        slug: "saarlouis",
-      },
-      {
-        name: "Saarpfalz-Kreis",
-        slug: "saarpfalz-kreis",  
-      },
-      {
-        name: "Neunkirchen",
-        slug: "neunkirchen",  
-      },
-      {
-        name: "Merzig-Wadern",
-        slug: "merzig-wadern",   
-      },
-      {
-        name: "St. Wendel",
-        slug: "st-wendel",  
-      }
-    ],
-  }
+
+  const states = [
+    {
+      name: "Saarland",
+      slug: "saarland",
+    },
 ]
 
+const districts = [
+    {
+      name: "Saarbrücken",
+      slug: "saarbruecken",
+    },
+    {
+      name: "Saarlouis",
+      slug: "saarlouis",
+    },
+]
 
+const saarland = await prisma.state.upsert({
+  where: {
+    slug: "saarland",
+  },
+  update: {},
+  create: {
+    name: "Saarland",
+    slug: "saarland",
+  },
+})
 
- const resultSports = await prisma.sport.createMany({
+  await prisma.sport.createMany({
   data: sports,
   skipDuplicates: true,
 })
 
-const resultStates = await prisma.state.createMany({
+  await prisma.state.createMany({
   data: states,
   skipDuplicates: true,
 })
 
-  console.log("Sportarten eingefügt")
-  console.log(resultSports)
-  console.log("Landkreise eingefügt")
-  console.log(resultStates)
-  const allSports = await prisma.sport.findMany()
-  const allStates = await prisma.state.findMany()
-  
+ await prisma.district.createMany({
+  data: [
+    {
+      name: "Saarbrücken",
+      slug: "saarbruecken",
+      stateId: saarland.id,
+    },
+    {
+      name: "Saarlouis",
+      slug: "saarlouis",
+      stateId: saarland.id,
+    },
+  ],
+  skipDuplicates: true,
+})
 
-  console.log(allSports)
-  console.log(allStates)
-  
 }
-
-
 
 main()
   .catch((e) => {
